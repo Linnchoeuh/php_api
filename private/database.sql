@@ -12,9 +12,11 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS connection_tokens
 (
     `token` VARCHAR(32),
-    `expiration` TIMESTAMP,
+    `creation_date` TIMESTAMP,
     `user_id` INT UNSIGNED,
 
+    UNIQUE(`token`),
+	PRIMARY KEY(`token`),
     FOREIGN KEY(`user_id`)
     REFERENCES `php_api`.`users`(`user_id`)
 );

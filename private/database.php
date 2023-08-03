@@ -66,8 +66,53 @@ class DatabaseAccess
         $request->execute();
         return (($request) ? true : false);
     }
-    function searchToken(string $token): Array
+    function listUser(): Array
     {
-        return ([]);
+        $user_list = [];
+        $request_string = "SELECT email FROM users";
+        $request = $this->_PDO->prepare($request_string);
+        $request->execute();
+        $data = $request->fetchAll(PDO::FETCH_ASSOC);
+        $request->closeCursor();
+        foreach ($data as $email) {
+            array_push($user_list, $email["email"]);
+        }
+        return ($user_list);
+    }
+    function createToken(int $user_id): string
+    {
+        $token = md5(rand());
+        $creation_date = date("Y-m-d H:i:s");
+        $request_string = "INSERT INTO connection_tokens(token, creation_date, user_id)
+        VALUES(:token, :creation_date, :user_id)";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":token", $token);
+        $request->bindParam(":creation_date", $creation_date);
+        $request->bindParam(":user_id", $user_id);
+        $request->execute();
+        return ($token);
+    }
+    function searchToken(string $token)
+    {
+        $token_data = [];
+        $request_string = "SELECT * FROM connection_tokens WHERE token = :token";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":token", $token);
+        $request->execute();
+        $token_data = $request->fetchAll(PDO::FETCH_ASSOC);
+        $request->closeCursor();
+        if (!isset($token_data[0]))
+            return ([]);
+        $token_data = $token_data[0];
+        $token_data["creation_date"] = strtotime($token_data["creation_date"]);
+        if ($token_data["creation_date"] + TOKEN_VALIDITY < time()) {
+            $request_string = "DELETE FROM `connection_tokens` WHERE `token` = :token";
+            $request = $this->_PDO->prepare($request_string);
+            $request->bindParam(":token", $token);
+            $request->execute();
+            $request->closeCursor();
+            return ([]);
+        }
+        return ($token_data);
     }
 }

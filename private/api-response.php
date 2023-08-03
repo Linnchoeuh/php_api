@@ -2,6 +2,7 @@
 
 define("INVALID_PARAM", "Invalid parameters.");
 define("DB_FAIL", "Failed to recover data from database.");
+define("INVALID_TOKEN", "Invalid token. Use login API call to get one.");
 
 // Response codes
 define("RESP_OK", 200); // request accepted, response contains result

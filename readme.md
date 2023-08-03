@@ -19,3 +19,5 @@ You must add/edit/uncomment the following line to your php.ini file:
 
 This API use **MYSQL 8.1** as database,
 you can configure your login information in `./private/db-config.php`
+
+All the setup of the database itself is written in `./private/database.sql`
