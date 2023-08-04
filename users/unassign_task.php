@@ -30,8 +30,8 @@ try {
         send_response($response_json, RESP_NOT_FOUND);
         exit;
     }
-    if (!$db->assignTask($user["user_id"], $task["task_id"])) {
-        $response_json["status"] = "Failed to unassign ".$user["email"]." to task ".$task["task_id"];
+    if (!$db->unassignTask($user["user_id"], $task["task_id"])) {
+        $response_json["status"] = "Failed to assign ".$user["email"]." to task ".$task["task_id"];
         send_response($response_json, RESP_INTERNAL_ERROR);
         exit;
     }
@@ -39,5 +39,5 @@ try {
     send_db_error_response($response_json, $pe);
 }
 
-$response_json["status"] = $user["email"]." has been assigned to task ".$task["task_id"].".";
+$response_json["status"] = $user["email"]." has been unassigned to task ".$task["task_id"].".";
 send_response($response_json, RESP_OK);

@@ -8,10 +8,18 @@
  */
 function check_parameters_exist(array $response_json, array $params)
 {
+    $one_or_param = false;
     $missing_params = [];
-    // print_r($_GET);
     foreach ($params as $param) {
-        if (!isset($_GET[$param]))
+        if (gettype($param) === "array") {
+            $one_or_param = false;
+            foreach ($param as $or_param) {
+                if (isset($_GET[$or_param]))
+                    $one_or_param = true;
+            }
+            if (!$one_or_param)
+                array_push($missing_params, $param[0]);
+        } else if (!isset($_GET[$param]))
             array_push($missing_params, $param);
     }
     if ($missing_params !== []) {

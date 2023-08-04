@@ -140,6 +140,16 @@ class DatabaseAccess
         $request->execute();
         return (($request) ? true : false);
     }
+    public function deleteTask(int $task_id): bool
+    {
+        $this->deleteTaskAssignee($task_id);
+        $request_string = "DELETE FROM `tasks` WHERE `task_id` = :task_id";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":task_id", $task_id);
+        $request->execute();
+        return (($request) ? true : false);
+    }
+
     public function assignTask(int $user_id, int $task_id): bool
     {
         $request_string = "INSERT INTO assignation(user_id, task_id)
@@ -150,18 +160,19 @@ class DatabaseAccess
         $request->execute();
         return (($request) ? true : false);
     }
-    public function deleteTaskAssignee(int $task_id): bool
+    public function unassignTask(int $user_id, int $task_id): bool
     {
-        $request_string = "DELETE FROM `assignation` WHERE `task_id` = :task_id";
+        $request_string = "DELETE FROM `assignation`
+        WHERE `user_id` = :user_id AND `task_id`= :task_id";
         $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":user_id", $user_id);
         $request->bindParam(":task_id", $task_id);
         $request->execute();
         return (($request) ? true : false);
     }
-    public function deleteTask(int $task_id): bool
+    public function deleteTaskAssignee(int $task_id): bool
     {
-        $this->deleteTaskAssignee($task_id);
-        $request_string = "DELETE FROM `tasks` WHERE `task_id` = :task_id";
+        $request_string = "DELETE FROM `assignation` WHERE `task_id` = :task_id";
         $request = $this->_PDO->prepare($request_string);
         $request->bindParam(":task_id", $task_id);
         $request->execute();
