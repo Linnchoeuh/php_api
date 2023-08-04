@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS assignation
     `user_id` INT UNSIGNED NOT NULL,
     `task_id` INT UNSIGNED NOT NULL,
 
+    UNIQUE (user_id, task_id),
     FOREIGN KEY(`user_id`)
     REFERENCES `php_api`.`users`(`user_id`),
     FOREIGN KEY(`task_id`)

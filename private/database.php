@@ -86,6 +86,7 @@ class DatabaseAccess
         }
         return ($user_list);
     }
+
     public function createTask(string $topic, string $description): bool
     {
         $request_string = "INSERT INTO tasks(topic, description)
@@ -139,6 +140,34 @@ class DatabaseAccess
         $request->execute();
         return (($request) ? true : false);
     }
+    public function assignTask(int $user_id, int $task_id): bool
+    {
+        $request_string = "INSERT INTO assignation(user_id, task_id)
+        VALUES(:user_id, :task_id)";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":user_id", $user_id);
+        $request->bindParam(":task_id", $task_id);
+        $request->execute();
+        return (($request) ? true : false);
+    }
+    public function deleteTaskAssignee(int $task_id): bool
+    {
+        $request_string = "DELETE FROM `assignation` WHERE `task_id` = :task_id";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":task_id", $task_id);
+        $request->execute();
+        return (($request) ? true : false);
+    }
+    public function deleteTask(int $task_id): bool
+    {
+        $this->deleteTaskAssignee($task_id);
+        $request_string = "DELETE FROM `tasks` WHERE `task_id` = :task_id";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":task_id", $task_id);
+        $request->execute();
+        return (($request) ? true : false);
+    }
+
     public function createToken(int $user_id): string
     {
         $token = md5(rand());
