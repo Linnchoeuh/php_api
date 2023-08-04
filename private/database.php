@@ -22,13 +22,20 @@ class DatabaseAccess
 
     public function initConnection(string $db_dsn = DB_DSN, string $db_user = DB_USER, string $db_pass = DB_PASS)
     {
-        $options = [
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_EMULATE_PREPARES => false,
-            PDO::ATTR_PERSISTENT => true,
-        ];
-        $this->_PDO = new PDO($db_dsn, $db_user, $db_pass, $options);
+        try {
+            if (!defined('PDO::MYSQL_ATTR_INIT_COMMAND')) {
+                throw new Exception("PDO extension is not correctly loaded.");
+            }
+            $options = [
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_PERSISTENT => true,
+            ];
+            $this->_PDO = new PDO($db_dsn, $db_user, $db_pass, $options);
+        } catch (Exception $e) {
+            send_db_error_response([], $e);
+        }
     }
     public function searchUserByEmail(string $email): Array
     {
@@ -43,7 +50,7 @@ class DatabaseAccess
         $request->closeCursor();
         return ([]);
     }
-    function searchUserById(int $user_id): Array
+    public function searchUserById(int $user_id): Array
     {
         $request_string = "SELECT * FROM users WHERE user_id = :user_id";
         $request = $this->_PDO->prepare($request_string);
@@ -56,7 +63,7 @@ class DatabaseAccess
         $request->closeCursor();
         return ([]);
     }
-    function addUser(string $email, string $pass): bool
+    public function addUser(string $email, string $pass): bool
     {
         $pass = md5($email.$pass);
         $request_string = "INSERT INTO users(email,pass) VALUES(:email, :pass)";
@@ -66,7 +73,7 @@ class DatabaseAccess
         $request->execute();
         return (($request) ? true : false);
     }
-    function listUser(): Array
+    public function listUser(): Array
     {
         $user_list = [];
         $request_string = "SELECT email FROM users";
@@ -79,7 +86,17 @@ class DatabaseAccess
         }
         return ($user_list);
     }
-    function createToken(int $user_id): string
+    public function createTask(string $topic, string $description): bool
+    {
+        $request_string = "INSERT INTO tasks(topic, description)
+        VALUES(:topic, :description)";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":topic", $topic);
+        $request->bindParam(":description", $description);
+        $request->execute();
+        return (($request) ? true : false);
+    }
+    public function createToken(int $user_id): string
     {
         $token = md5(rand());
         $creation_date = date("Y-m-d H:i:s");
@@ -92,7 +109,7 @@ class DatabaseAccess
         $request->execute();
         return ($token);
     }
-    function searchToken(string $token)
+    public function searchToken(string $token)
     {
         $token_data = [];
         $request_string = "SELECT * FROM connection_tokens WHERE token = :token";

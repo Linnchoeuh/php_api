@@ -9,10 +9,7 @@ $response_json = [
     "token" => "",
 ];
 
-if (!is_parameters_exist(["email", "pass"])) {
-    send_response($response_json, RESP_BAD_REQUEST);
-    exit;
-}
+check_parameters_exist($response_json, ["email", "pass"]);
 
 if (!is_email($_GET["email"])) {
     $response_json["status"] = "Invalid email";
@@ -24,18 +21,14 @@ try {
     $db = new DatabaseAccess();
     $response_json["status"] = "Unknown email / password pair";
     $user = $db->searchUserByEmail($_GET["email"]);
-    // print_r($user);
     if ($user === [] || $user["pass"] !== md5($_GET["email"].$_GET["pass"])) {
         send_response($response_json, RESP_BAD_REQUEST);
         exit;
     }
     $response_json["token"] = $db->createToken($user["user_id"]);
-    // $db->addUser($_GET["email"], $_GET["pass"]);
 } catch (PDOException $pe) {
-    $response_json["status"] = $pe->getMessage();
     $response_json["token"] = "";
-    send_response($response_json, RESP_OK);
-    exit;
+    send_db_error_response($response_json, $pe);
 }
 $response_json["status"] = "Successfully connected";
-send_response($response_json, RESP_CREATED);
+send_response($response_json, RESP_OK);

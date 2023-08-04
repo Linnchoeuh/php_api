@@ -6,14 +6,38 @@
  *
  * @return bool true if all the parameters exist false otherwise
  */
-function is_parameters_exist(array $params): bool
+function check_parameters_exist(array $response_json, array $params)
 {
+    $missing_params = [];
     // print_r($_GET);
     foreach ($params as $param) {
         if (!isset($_GET[$param]))
-            return (false);
+            array_push($missing_params, $param);
     }
-    return (true);
+    if ($missing_params !== []) {
+        if (count($missing_params) == 1) {
+            $response_json["status"] = "Parameter: [".$missing_params[0]."] is missing.";
+        } else {
+            $response_json["status"] = "Parameters: ";
+            foreach ($missing_params as $param) {
+                $response_json["status"] .= "[".$param."] ";
+            }
+            $response_json["status"] .= "are missing.";
+        }
+        send_response($response_json, RESP_BAD_REQUEST);
+        exit;
+    }
+}
+
+function check_token(DatabaseAccess $db, string $token): Array
+{
+    $token_data = $db->searchToken($token);
+    if ($token_data === []) {
+        $response_json["status"] = INVALID_TOKEN;
+        send_response($response_json, RESP_NOT_ALLOWED);
+        exit;
+    }
+    return ($token_data);
 }
 
 /**

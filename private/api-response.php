@@ -11,6 +11,7 @@ define("RESP_NO_CONTENT", 204); // request accepted, nothing to return
 define("RESP_BAD_REQUEST", 400); // Invalid request
 define("RESP_NOT_FOUND", 404); // no such resource
 define("RESP_NOT_ALLOWED", 405); // method cannot be performed against the resource
+define("RESP_INTERNAL_ERROR", 500);
 
 function send_response(string | Array $data, int $http_code = RESP_OK) : void
 {
@@ -20,4 +21,11 @@ function send_response(string | Array $data, int $http_code = RESP_OK) : void
         $data = json_encode($data);
     }
     echo $data;
+}
+
+function send_db_error_response(Array $response_json, PDOException | Exception $pe) : void
+{
+    $response_json["status"] = $pe->getMessage();
+    send_response($response_json, RESP_INTERNAL_ERROR);
+    exit;
 }

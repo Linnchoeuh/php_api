@@ -9,19 +9,13 @@ $response_json = [
     "user_list" => [],
 ];
 
-if (!is_parameters_exist(["token"])) {
-    send_response($response_json, RESP_BAD_REQUEST);
-    exit;
-}
+
+check_parameters_exist($response_json, ["token"]);
 
 try {
     $db = new DatabaseAccess();
 
-    if ($db->searchToken($_GET["token"]) === []) {
-        $response_json["status"] = INVALID_TOKEN;
-        send_response($response_json, RESP_NOT_ALLOWED);
-        exit;
-    }
+    check_token($db, $_GET["token"]);
     $response_json["user_list"] = $db->listUser();
 } catch (PDOException $pe) {
     $response_json["status"] = $pe->getMessage();
