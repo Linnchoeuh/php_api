@@ -36,9 +36,7 @@ try {
         exit;
     }
 } catch (PDOException $pe) {
-    $response_json["status"] = $pe->getMessage();
-    send_response($response_json, RESP_OK);
-    exit;
+    send_db_error_response($response_json, $pe);
 }
 $response_json["status"] = "Successfully registered";
 send_response($response_json, RESP_CREATED);

@@ -18,10 +18,8 @@ try {
     check_token($db, $_GET["token"]);
     $response_json["user_list"] = $db->listUser();
 } catch (PDOException $pe) {
-    $response_json["status"] = $pe->getMessage();
     $response_json["user_list"] = [];
-    send_response($response_json, RESP_OK);
-    exit;
+    send_db_error_response($response_json, $pe);
 }
 $response_json["status"] = "ok";
 send_response($response_json, RESP_OK);

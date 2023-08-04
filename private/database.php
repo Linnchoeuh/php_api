@@ -96,6 +96,19 @@ class DatabaseAccess
         $request->execute();
         return (($request) ? true : false);
     }
+    public function listTask(): Array
+    {
+        $task_list = [];
+        $request_string = "SELECT * FROM tasks";
+        $request = $this->_PDO->prepare($request_string);
+        $request->execute();
+        $task_list = $request->fetchAll(PDO::FETCH_ASSOC);
+        $request->closeCursor();
+        // foreach ($data as $email) {
+        //     array_push($task_list, $email["email"]);
+        // }
+        return ($task_list);
+    }
     public function createToken(int $user_id): string
     {
         $token = md5(rand());
