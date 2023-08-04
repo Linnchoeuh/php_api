@@ -104,10 +104,40 @@ class DatabaseAccess
         $request->execute();
         $task_list = $request->fetchAll(PDO::FETCH_ASSOC);
         $request->closeCursor();
-        // foreach ($data as $email) {
-        //     array_push($task_list, $email["email"]);
-        // }
         return ($task_list);
+    }
+    public function findTask(int $task_id): Array
+    {
+        $task_data = [];
+        $request_string = "SELECT * FROM tasks WHERE `task_id`=:task_id";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":task_id", $task_id);
+        $request->execute();
+        $task_data = $request->fetchAll(PDO::FETCH_ASSOC);
+        $request->closeCursor();
+        if (!isset($task_data[0]))
+            return ([]);
+        return ($task_data[0]);
+    }
+    public function editTaskTopic(int $task_id, string $topic): bool
+    {
+        $request_string = "UPDATE tasks SET topic=:topic
+        WHERE `task_id`=:task_id;";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":topic", $topic);
+        $request->bindParam(":task_id", $task_id);
+        $request->execute();
+        return (($request) ? true : false);
+    }
+    public function editTaskDescription(int $task_id, string $description): bool
+    {
+        $request_string = "UPDATE tasks SET description=:description
+        WHERE `task_id`=:task_id;";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":description", $description);
+        $request->bindParam(":task_id", $task_id);
+        $request->execute();
+        return (($request) ? true : false);
     }
     public function createToken(int $user_id): string
     {
