@@ -33,7 +33,7 @@ Here are listed all the available call for this API.
 Let you register a user into the API.
 
 **Parameters:**
-- **email** *This will be the email used for [login](#[POST]-Login)*
+- **email** *This will be the email used for [login](#post-login)*
 - **pass** *The password of this user*
 
 **Format:**
@@ -46,7 +46,7 @@ Let you register a user into the API.
 
 
 
-### [POST] Login
+### [POST] Login {#post-login}
 **url:** `{{api_url}}/auth/register`
 
 Let you connect into the API. And returns you a **token** needed for all the other call.
