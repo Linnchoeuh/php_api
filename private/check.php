@@ -1,5 +1,7 @@
 <?php
 
+use JetBrains\PhpStorm\ArrayShape;
+
 /**
  * @param array $get You must put in the $_GET variable
  * @param array $params An array of string parameter
@@ -58,4 +60,20 @@ function check_token(DatabaseAccess $db, string $token): Array
 function is_email(string $email): bool
 {
     return (preg_match("/.+@.+\\..+/", $email) === 1);
+}
+
+function get_user_from_param(DatabaseAccess $db, Array $response_json, bool $remove_pass = true, bool $block_user_id = false): Array
+{
+    if (!$block_user_id && isset($_GET["user_id"])) {
+        $user_id = (int)$_GET["user_id"];
+        $user = $db->searchUserById($user_id);
+    } else
+        $user = $db->searchUserByEmail($_GET["email"]);
+    if ($user === []) {
+        $response_json["status"] = "User not found";
+        send_response($response_json, RESP_NOT_FOUND);
+        exit;
+    }
+    unset($user["pass"]);
+    return ($user);
 }

@@ -22,7 +22,7 @@ try {
     $response_json["status"] = "Unknown email / password pair";
     $user = $db->searchUserByEmail($_GET["email"]);
     if ($user === [] || $user["pass"] !== md5($_GET["email"].$_GET["pass"])) {
-        send_response($response_json, RESP_BAD_REQUEST);
+        send_response($response_json, RESP_NOT_FOUND);
         exit;
     }
     $response_json["token"] = $db->createToken($user["user_id"]);

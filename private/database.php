@@ -178,6 +178,34 @@ class DatabaseAccess
         $request->execute();
         return (($request) ? true : false);
     }
+    public function findUserAssignment(int $user_id): Array
+    {
+        $request_string = "SELECT * FROM assignation
+        JOIN tasks ON assignation.task_id = tasks.task_id
+        WHERE assignation.user_id = :user_id;";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":user_id", $user_id);
+        $request->execute();
+        $assigned_tasks = $request->fetchAll(PDO::FETCH_ASSOC);
+        for ($i = 0; $i < count($assigned_tasks); $i++) {
+            unset($assigned_tasks[$i]["user_id"]);
+        }
+        return ($assigned_tasks);
+    }
+    public function findTaskAssignee(int $user_id): Array
+    {
+        $request_string = "SELECT * FROM assignation
+        JOIN tasks ON assignation.task_id = tasks.task_id
+        WHERE assignation.user_id = :user_id;";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":user_id", $user_id);
+        $request->execute();
+        $assigned_tasks = $request->fetchAll(PDO::FETCH_ASSOC);
+        for ($i = 0; $i < count($assigned_tasks); $i++) {
+            unset($assigned_tasks[$i]["user_id"]);
+        }
+        return ($assigned_tasks);
+    }
 
     public function createToken(int $user_id): string
     {

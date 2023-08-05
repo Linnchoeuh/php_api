@@ -16,17 +16,9 @@ try {
 
     check_token($db, $_GET["token"]);
     $task = $db->findTask($task_id);
-    if (isset($_GET["user_id"]))
-        $user = $db->searchUserById($_GET["user_id"]);
-    else
-        $user = $db->searchUserByEmail($_GET["email"]);
+    $user = get_user_from_param($db, $response_json);
     if ($task === []) {
         $response_json["status"] = "Task not found";
-        send_response($response_json, RESP_NOT_FOUND);
-        exit;
-    }
-    if ($user === []) {
-        $response_json["status"] = "User not found";
         send_response($response_json, RESP_NOT_FOUND);
         exit;
     }
