@@ -46,7 +46,7 @@ Let you register a user into the API.
 
 
 
-### [POST] Login {#post-login}
+### [POST] Login
 **url:** `{{api_url}}/auth/register`
 
 Let you connect into the API. And returns you a **token** needed for all the other call.
