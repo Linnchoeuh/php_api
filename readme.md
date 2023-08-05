@@ -21,3 +21,23 @@ This API use **MYSQL 8.1** as database,
 you can configure your login information in `./private/db-config.php`
 
 All the setup of the database itself is written in `./private/database.sql`
+
+# API CALL
+Here are listed all the available call for this API.
+
+## Authentication:
+
+### [POST] register
+url: `{{api_url}}/auth/register`
+Let you register a user into the API.
+Parameters:
+- **email** *This will be email used for [login](#[POST]-login)*
+- **pass** *The password of this user*
+
+
+### [POST] login
+url: `{{api_url}}/auth/login`
+Let you connect into the API. And returns you a **token** needed for all the other call.
+Parameters:
+- **email**
+- **pass**
