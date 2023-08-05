@@ -81,9 +81,6 @@ class DatabaseAccess
         $request->execute();
         $data = $request->fetchAll(PDO::FETCH_ASSOC);
         $request->closeCursor();
-        // foreach ($data as $email) {
-        //     array_push($user_list, $email["email"]);
-        // }
         return ($data);
     }
 
@@ -214,6 +211,7 @@ class DatabaseAccess
 
     public function createToken(int $user_id): string
     {
+        $this->passiveDeleteToken();
         $token = md5(rand());
         $creation_date = date("Y-m-d H:i:s");
         $request_string = "INSERT INTO connection_tokens(token, creation_date, user_id)
@@ -227,6 +225,7 @@ class DatabaseAccess
     }
     public function searchToken(string $token)
     {
+        $this->passiveDeleteToken();
         $token_data = [];
         $request_string = "SELECT * FROM connection_tokens WHERE token = :token";
         $request = $this->_PDO->prepare($request_string);
@@ -239,13 +238,38 @@ class DatabaseAccess
         $token_data = $token_data[0];
         $token_data["creation_date"] = strtotime($token_data["creation_date"]);
         if ($token_data["creation_date"] + TOKEN_VALIDITY < time()) {
-            $request_string = "DELETE FROM `connection_tokens` WHERE `token` = :token";
-            $request = $this->_PDO->prepare($request_string);
-            $request->bindParam(":token", $token);
-            $request->execute();
-            $request->closeCursor();
+            $this->deleteToken($token);
             return ([]);
         }
         return ($token_data);
+    }
+    public function deleteToken(string $token)
+    {
+        $request_string = "DELETE FROM `connection_tokens` WHERE `token` = :token";
+        $request = $this->_PDO->prepare($request_string);
+        $request->bindParam(":token", $token);
+        $request->execute();
+        $request->closeCursor();
+        return (($request) ? true : false);
+    }
+    /**
+     * Passively remove the top deck token if it's expired.
+     *
+     * @return [type] void
+     */
+    public function passiveDeleteToken()
+    {
+        $request_string = "SELECT * FROM connection_tokens LIMIT 1";
+        $request = $this->_PDO->prepare($request_string);
+        $request->execute();
+        $token_data = $request->fetchAll(PDO::FETCH_ASSOC);
+        if ($token_data === [])
+            return;
+        $token_data = $token_data[0];
+        $token_data["creation_date"] = strtotime($token_data["creation_date"]);
+        if ($token_data["creation_date"] + TOKEN_VALIDITY < time()) {
+            $this->deleteToken($token_data["token"]);
+            return ([]);
+        }
     }
 }

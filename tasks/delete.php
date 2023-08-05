@@ -30,5 +30,5 @@ try {
     send_db_error_response($response_json, $pe);
 }
 
-$response_json["status"] = "Task ".$task["task_id"]." has successfully deleted.";
+$response_json["status"] = "Task ".$task["task_id"]." has been successfully deleted.";
 send_response($response_json, RESP_OK);
