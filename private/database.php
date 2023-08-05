@@ -76,15 +76,15 @@ class DatabaseAccess
     public function listUser(): Array
     {
         $user_list = [];
-        $request_string = "SELECT email FROM users";
+        $request_string = "SELECT user_id, email FROM users";
         $request = $this->_PDO->prepare($request_string);
         $request->execute();
         $data = $request->fetchAll(PDO::FETCH_ASSOC);
         $request->closeCursor();
-        foreach ($data as $email) {
-            array_push($user_list, $email["email"]);
-        }
-        return ($user_list);
+        // foreach ($data as $email) {
+        //     array_push($user_list, $email["email"]);
+        // }
+        return ($data);
     }
 
     public function createTask(string $topic, string $description): bool
