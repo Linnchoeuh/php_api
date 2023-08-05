@@ -122,6 +122,8 @@ class DatabaseAccess
     }
     public function editTaskTopic(int $task_id, string $topic): bool
     {
+        if ($topic === "")
+            return (false);
         $request_string = "UPDATE tasks SET topic=:topic
         WHERE `task_id`=:task_id;";
         $request = $this->_PDO->prepare($request_string);
@@ -132,6 +134,8 @@ class DatabaseAccess
     }
     public function editTaskDescription(int $task_id, string $description): bool
     {
+        if ($description === "")
+            return (false);
         $request_string = "UPDATE tasks SET description=:description
         WHERE `task_id`=:task_id;";
         $request = $this->_PDO->prepare($request_string);
