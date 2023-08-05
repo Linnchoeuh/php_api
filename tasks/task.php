@@ -17,6 +17,11 @@ try {
 
     check_token($db, $_GET["token"]);
     $task = $db->findTask($task_id);
+    if ($task === []) {
+        $response_json["status"] = "Task not found";
+        send_response($response_json, RESP_NOT_FOUND);
+        exit;
+    }
     $task["assignee"] = $db->findTaskAssignee($task["task_id"]);
 
     $response_json["task_data"] = $task;
