@@ -33,7 +33,7 @@ Here are listed all the available call for this API.
 Let you register a user into the API.
 
 **Parameters:**
-- **email** *This will be the email used for [login](#[POST]-login)*
+- **email** *This will be the email used for [login](#[POST]-Login)*
 - **pass** *The password of this user*
 
 **Format:**
@@ -77,7 +77,7 @@ url: `{{api_url}}/users/list`
 Let you see all the registered users and their **user_id**.
 
 Parameters:
-- **token** *obtainable with [login](#[POST]-login) call*
+- **token** *obtainable with [login](#[POST]-Login) call*
 
 **Format:**
 ```json
@@ -105,7 +105,7 @@ url: `{{api_url}}/users/user`
 Let you see detailed information about a user.
 
 Parameters:
-- **token** *obtainable with [login](#[POST]-login) call*
+- **token** *obtainable with [login](#[POST]-Login) call*
 
 **Format:**
 ```json
